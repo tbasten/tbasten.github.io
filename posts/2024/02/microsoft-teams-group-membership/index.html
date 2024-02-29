@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>Microsoft Teams Group Membership | </title>
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="description" content="The idea Have a tool that can be scheduled or ran on demand that mirrors the membership of an AD group to a Microsoft Teams Team.
+The approach This should be pretty easy. Just need to connect to AD and Microsoft Entra or Microsoft Graph to get a list of all the current members and remove / add users where needed.
+Get the members of the group in AD Export group members and data Get the members of the group in Entra ID Export group members and data Compare the current members in Entra ID against the members of the AD Group Output Users to Add Output Users to remove Remove the users that are in the Entra ID group but not in the AD group Add the users that are not in the Entra ID group but are in the AD group Doing it Initially I will be setting the group details as a hashtable and setup the function that we will be using">
+    <meta name="generator" content="Hugo 0.123.4">
+    
+    
+    
+    
+      <meta name="robots" content="noindex, nofollow">
+    
+
+    
+<link rel="stylesheet" href="/ananke/css/main.min.css" >
+
+
+
+    
+
+    
+      
+
+    
+
+    
+
+    
+      <link rel="canonical" href="https://tbasten.github.io/posts/2024/02/microsoft-teams-group-membership/">
+    
+
+    <meta property="og:title" content="Microsoft Teams Group Membership" />
+<meta property="og:description" content="The idea Have a tool that can be scheduled or ran on demand that mirrors the membership of an AD group to a Microsoft Teams Team.
+The approach This should be pretty easy. Just need to connect to AD and Microsoft Entra or Microsoft Graph to get a list of all the current members and remove / add users where needed.
+Get the members of the group in AD Export group members and data Get the members of the group in Entra ID Export group members and data Compare the current members in Entra ID against the members of the AD Group Output Users to Add Output Users to remove Remove the users that are in the Entra ID group but not in the AD group Add the users that are not in the Entra ID group but are in the AD group Doing it Initially I will be setting the group details as a hashtable and setup the function that we will be using" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://tbasten.github.io/posts/2024/02/microsoft-teams-group-membership/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-02-27T13:15:41+08:00" />
+<meta property="article:modified_time" content="2024-02-27T13:15:41+08:00" />
+
+<meta itemprop="name" content="Microsoft Teams Group Membership">
+<meta itemprop="description" content="The idea Have a tool that can be scheduled or ran on demand that mirrors the membership of an AD group to a Microsoft Teams Team.
+The approach This should be pretty easy. Just need to connect to AD and Microsoft Entra or Microsoft Graph to get a list of all the current members and remove / add users where needed.
+Get the members of the group in AD Export group members and data Get the members of the group in Entra ID Export group members and data Compare the current members in Entra ID against the members of the AD Group Output Users to Add Output Users to remove Remove the users that are in the Entra ID group but not in the AD group Add the users that are not in the Entra ID group but are in the AD group Doing it Initially I will be setting the group details as a hashtable and setup the function that we will be using"><meta itemprop="datePublished" content="2024-02-27T13:15:41+08:00" />
+<meta itemprop="dateModified" content="2024-02-27T13:15:41+08:00" />
+<meta itemprop="wordCount" content="1281">
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/><meta name="twitter:title" content="Microsoft Teams Group Membership"/>
+<meta name="twitter:description" content="The idea Have a tool that can be scheduled or ran on demand that mirrors the membership of an AD group to a Microsoft Teams Team.
+The approach This should be pretty easy. Just need to connect to AD and Microsoft Entra or Microsoft Graph to get a list of all the current members and remove / add users where needed.
+Get the members of the group in AD Export group members and data Get the members of the group in Entra ID Export group members and data Compare the current members in Entra ID against the members of the AD Group Output Users to Add Output Users to remove Remove the users that are in the Entra ID group but not in the AD group Add the users that are not in the Entra ID group but are in the AD group Doing it Initially I will be setting the group details as a hashtable and setup the function that we will be using"/>
+
+	
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="/" class="f3 fw2 hover-white no-underline white-90 dib">
+      
+        
+      
+    </a>
+    <div class="flex-l items-center">
+      
+
+      
+      
+<div class="ananke-socials">
+  
+</div>
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  
+  <article class="flex-l flex-wrap justify-between mw8 center ph3">
+    <header class="mt4 w-100">
+      <aside class="instapaper_ignoref b helvetica tracked ttu">
+          
+        Posts
+      </aside>
+      
+
+
+
+
+
+
+
+
+
+
+  <div id="sharing" class="mt3 ananke-socials">
+    
+  </div>
+
+
+      <h1 class="f1 athelas mt3 mb1">Microsoft Teams Group Membership</h1>
+      
+      
+      
+      <time class="f6 mv4 dib tracked" datetime="2024-02-27T13:15:41+08:00">February 27, 2024</time>
+      
+
+      
+      
+    </header>
+    <div class="nested-copy-line-height lh-copy serif f4 nested-links mid-gray pr4-l w-two-thirds-l"><h1 id="the-idea">The idea</h1>
+<p>Have a tool that can be scheduled or ran on demand that mirrors the membership of an AD group to a Microsoft Teams Team.</p>
+<h1 id="the-approach">The approach</h1>
+<p>This should be pretty easy. Just need to connect to AD and Microsoft Entra or Microsoft Graph to get a list of all the current members and remove / add users where needed.</p>
+<ul>
+<li>Get the members of the group in AD
+<ul>
+<li>Export group members and data</li>
+</ul>
+</li>
+<li>Get the members of the group in Entra ID
+<ul>
+<li>Export group members and data</li>
+</ul>
+</li>
+<li>Compare the current members in Entra ID against the members of the AD Group
+<ul>
+<li>Output Users to Add</li>
+<li>Output Users to remove</li>
+</ul>
+</li>
+<li>Remove the users that are in the Entra ID group but not in the AD group</li>
+<li>Add the users that are not in the Entra ID group but are in the AD group</li>
+</ul>
+<h1 id="doing-it">Doing it</h1>
+<p>Initially I will be setting the group details as a hashtable and setup the function that we will be using</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-PowerShell" data-lang="PowerShell"><span style="display:flex;"><span>$groups = @(
+</span></span><span style="display:flex;"><span>    @{
+</span></span><span style="display:flex;"><span>        AzureGroupName = <span style="color:#e6db74">&#34;All Staff&#34;</span>
+</span></span><span style="display:flex;"><span>        AzureGroupId   = <span style="color:#e6db74">&#34;xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx&#34;</span>
+</span></span><span style="display:flex;"><span>        ADGroupName    = <span style="color:#e6db74">&#34;IDM All Staff&#34;</span>
+</span></span><span style="display:flex;"><span>        ADServerName    = <span style="color:#e6db74">&#34;Domain Controller&#34;</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">function</span> Get-GSGTeamsGroupChanges {
+</span></span><span style="display:flex;"><span>    [CmdletBinding()]
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">param</span> (
+</span></span><span style="display:flex;"><span>        $TeamsGroup
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">begin</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">#region Connect to Graph</span>
+</span></span><span style="display:flex;"><span>        import-module Microsoft.Graph.Groups
+</span></span><span style="display:flex;"><span>        import-module Microsoft.Graph.Users
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        $ClientSecret = <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        $ApplicationID = <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        $TenantID = <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        $graphtokenBody = @{   
+</span></span><span style="display:flex;"><span>            Grant_Type    = <span style="color:#e6db74">&#34;client_credentials&#34;</span>   
+</span></span><span style="display:flex;"><span>            Scope         = <span style="color:#e6db74">&#34;https://graph.microsoft.com/.default&#34;</span>   
+</span></span><span style="display:flex;"><span>            Client_Id     = $ApplicationID   
+</span></span><span style="display:flex;"><span>            Client_Secret = $ClientSecret   
+</span></span><span style="display:flex;"><span>        }  
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        $graphToken = Invoke-RestMethod -Uri <span style="color:#e6db74">&#34;https://login.microsoftonline.com/</span>$TenantID<span style="color:#e6db74">/oauth2/v2.0/token&#34;</span> -Method POST -Body $graphtokenBody | Select-Object -ExpandProperty Access_Token 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        Connect-MGGraph -AccessToken ($graphToken | ConvertTo-SecureString -AsPlainText -Force) -NoWelcome
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">#endregion</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        $Data =@()
+</span></span><span style="display:flex;"><span>        $ADGroupMembersAzureID = @()
+</span></span><span style="display:flex;"><span>        $AzureGroupMembersAzureID= @()
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">process</span> {
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">end</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> $Data
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><h1 id="ad-group-members">AD Group Members</h1>
+<p>This is pretty simple. Because I am using a PC that is Azure bound, I need to specify the AD server.</p>
+<p><code>$ADGroupMembers = Get-ADGroupMember $Group.ADGroupName -Server $Group.ADServerName | Get-ADUser -Server $Group.ADServerName -Properties * | Where-Object enabled -eq $true</code></p>
+<p>One thing that I notice is that MIM (our internal identity management platform) isn&rsquo;t currently managing the group membership correctly as I am notices some users who are left, are still a member of the AD Group (something for me to sort out later). For now, I will just filter them out in PowerShell.</p>
+<p>In the education sector, staff can have multiple contracts / job descriptions. In this context, I want to filter out relief teaching staff that doesn&rsquo;t have any other contracts / job descriptions.</p>
+<p>The way I am going to handle this is to count the total job descriptions, anything with a count of 1 and a job description of relief teacher, do not add it to the hashtable, otherwise add it to the hashtable</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-PowerShell" data-lang="PowerShell"><span style="display:flex;"><span><span style="color:#66d9ef">foreach</span>($Member <span style="color:#66d9ef">in</span> $ADGroupMembers){
+</span></span><span style="display:flex;"><span>    $JobPositionCount = [<span style="color:#66d9ef">PSObject[]</span>]($Member | Where-Object {($_.gsgGroups <span style="color:#f92672">-like</span> <span style="color:#e6db74">&#34;JPC*&#34;</span>)} | Select-Object gsgGroups).Count
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">switch</span> ($JobPositionCount) {
+</span></span><span style="display:flex;"><span>        <span style="color:#ae81ff">1</span> {<span style="color:#66d9ef">if</span>(![<span style="color:#66d9ef">PSObject[]</span>]($Member | Where-Object {($_.gsgGroups <span style="color:#f92672">-like</span> <span style="color:#e6db74">&#34;JPC_XRT&#34;</span>)})){
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">Default</span> {$FilteredGroupMembers += $Member}
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Now I realise that this isn&rsquo;t the best approach and that I shouldn&rsquo;t be using switch. Instead, I should be using the basic comparison operators and I do the inverse.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-PowerShell" data-lang="PowerShell"><span style="display:flex;"><span><span style="color:#66d9ef">foreach</span>($Member <span style="color:#66d9ef">in</span> $ADGroupMembers){
+</span></span><span style="display:flex;"><span>    $JobPositionCount = ($Member.gsgGroups <span style="color:#f92672">-clike</span> <span style="color:#e6db74">&#34;JPC*&#34;</span>).Count
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span>(!($Member.gsgGroups <span style="color:#f92672">-clike</span> <span style="color:#e6db74">&#34;JPC_XRT&#34;</span> <span style="color:#f92672">-and</span> $JobPositionCount <span style="color:#f92672">-eq</span> <span style="color:#ae81ff">1</span>)){
+</span></span><span style="display:flex;"><span>        $FilteredGroupMembers += $Member
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h1 id="teams-group-membership">Teams Group Membership</h1>
+<p>Let&rsquo;s get the current Teams group membership using the Graph PowerShell module.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-PowerShell" data-lang="PowerShell"><span style="display:flex;"><span>$AzureGroupMembers = (Get-MgGroupMember -GroupId $Group.AzureGroupId)
+</span></span></code></pre></div><p>For each of the group members in AD and Teams, I want to get the id to make group membership management faster instead of relying on graph&rsquo;s filter or search operators. I then will store this in 2 separate hashtables to allow me to do a comparison on.</p>
+<h1 id="get-id-for-all-ad-group-members">Get ID for all AD Group members</h1>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-PowerShell" data-lang="PowerShell"><span style="display:flex;"><span><span style="color:#66d9ef">foreach</span> ($Member <span style="color:#66d9ef">in</span> $ADGroupMembers) {
+</span></span><span style="display:flex;"><span>                $ADGroupMembersAzureID += (Get-MGUser -UserId $Member.UserPrincipalName -ErrorAction SilentlyContinue )
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Get ID for all AD Group members</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">foreach</span> ($Member <span style="color:#66d9ef">in</span> $AzureGroupMembers){
+</span></span><span style="display:flex;"><span>    $AzureGroupMembersAzureID += (Get-MGUser -UserId $Member.Id -ErrorAction SilentlyContinue)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h1 id="comparing-memberships">Comparing memberships</h1>
+<p>This is where the fun happens. I now have 2 variables to complete my comparisons on, $AzureGroupMembersAzureID and $ADGroupMembersAzureID. I want to handle the following conditions.</p>
+<ul>
+<li>Staff who exist in the On-Prem AD group but do not exist in the Team Group</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-PowerShell" data-lang="PowerShell"><span style="display:flex;"><span>$ToAdd = Compare-Object -ReferenceObject $ADGroupMembersAzureID.Id -DifferenceObject $AzureGroupMembersAzureID.Id | Where-Object { $_.SideIndicator <span style="color:#f92672">-eq</span> <span style="color:#e6db74">&#39;&lt;=&#39;</span> } | Select-Object -ExpandProperty InputObject
+</span></span></code></pre></div><ul>
+<li>Staff who exist in the Team group but do not exist in the On-Prem AD Group.</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-PowerShell" data-lang="PowerShell"><span style="display:flex;"><span>$ToRemove = Compare-Object -ReferenceObject $ADGroupMembersAzureID.Id -DifferenceObject $AzureGroupMembersAzureID.Id | Where-Object { $_.SideIndicator <span style="color:#f92672">-eq</span> <span style="color:#e6db74">&#39;=&gt;&#39;</span> } | Select-Object -ExpandProperty InputObject
+</span></span></code></pre></div><p>The easiest way I can describe this is that we are using the Compare-Object command to indicate which ids only exist in one of the variables and let us know where the different is. Compare-Object will return an indicator of &lt;= or =&gt;, depending on the situation.</p>
+<h1 id="returning-the-results">Returning the results</h1>
+<p>To make results usable, I need to return the data as a PSCustomObject that I can then pass it to a function that will make the changes.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-PowerShell" data-lang="PowerShell"><span style="display:flex;"><span>$Data =@([<span style="color:#66d9ef">pscustomobject</span>]@{
+</span></span><span style="display:flex;"><span>    Group = $Group.AzureGroupId;
+</span></span><span style="display:flex;"><span>    Remove = @($ToRemove);
+</span></span><span style="display:flex;"><span>    Add = @($ToAdd)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-PowerShell" data-lang="PowerShell"><span style="display:flex;"><span><span style="color:#66d9ef">end</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> $Data
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h1 id="putting-it-all-together">Putting it all together</h1>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-PowerShell" data-lang="PowerShell"><span style="display:flex;"><span>$groups = @(
+</span></span><span style="display:flex;"><span>    @{
+</span></span><span style="display:flex;"><span>        AzureGroupName = <span style="color:#e6db74">&#34;All Staff&#34;</span>
+</span></span><span style="display:flex;"><span>        AzureGroupId   = <span style="color:#e6db74">&#34;xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx&#34;</span>
+</span></span><span style="display:flex;"><span>        ADGroupName    = <span style="color:#e6db74">&#34;IDM All Staff&#34;</span>
+</span></span><span style="display:flex;"><span>        ADServerName    = <span style="color:#e6db74">&#34;Domain Controller&#34;</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">function</span> Get-GSGTeamsGroupChanges {
+</span></span><span style="display:flex;"><span>    [CmdletBinding()]
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">param</span> (
+</span></span><span style="display:flex;"><span>        $TeamsGroup
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">begin</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">#region Connect to Graph</span>
+</span></span><span style="display:flex;"><span>        import-module Microsoft.Graph.Groups
+</span></span><span style="display:flex;"><span>        import-module Microsoft.Graph.Users
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        $ClientSecret = <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        $ApplicationID = <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        $TenantID = <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        $graphtokenBody = @{   
+</span></span><span style="display:flex;"><span>            Grant_Type    = <span style="color:#e6db74">&#34;client_credentials&#34;</span>   
+</span></span><span style="display:flex;"><span>            Scope         = <span style="color:#e6db74">&#34;https://graph.microsoft.com/.default&#34;</span>   
+</span></span><span style="display:flex;"><span>            Client_Id     = $ApplicationID   
+</span></span><span style="display:flex;"><span>            Client_Secret = $ClientSecret   
+</span></span><span style="display:flex;"><span>        }  
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        $graphToken = Invoke-RestMethod -Uri <span style="color:#e6db74">&#34;https://login.microsoftonline.com/</span>$TenantID<span style="color:#e6db74">/oauth2/v2.0/token&#34;</span> -Method POST -Body $graphtokenBody | Select-Object -ExpandProperty Access_Token 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        Connect-MGGraph -AccessToken ($graphToken | ConvertTo-SecureString -AsPlainText -Force) -NoWelcome
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">#endregion</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        $Data =@()
+</span></span><span style="display:flex;"><span>        $ADGroupMembersAzureID = @()
+</span></span><span style="display:flex;"><span>        $AzureGroupMembersAzureID= @()
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">process</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">ForEach</span> ($Group <span style="color:#66d9ef">in</span> $TeamsGroup) {
+</span></span><span style="display:flex;"><span>            $ADGroupMembers = Get-ADGroupMember $Group.ADGroupName -Server $ADServerName | Get-ADUser -Server $ADServerName -Properties * | Where-Object enabled <span style="color:#f92672">-eq</span> $true
+</span></span><span style="display:flex;"><span>            $FilteredGroupMembers = @()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">foreach</span>($Member <span style="color:#66d9ef">in</span> $ADGroupMembers){
+</span></span><span style="display:flex;"><span>                $JobPositionCount = ($Member.gsgGroups <span style="color:#f92672">-clike</span> <span style="color:#e6db74">&#34;JPC*&#34;</span>).Count
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span>(!($Member.gsgGroups <span style="color:#f92672">-clike</span> <span style="color:#e6db74">&#34;JPC_XRT&#34;</span> <span style="color:#f92672">-and</span> $JobPositionCount <span style="color:#f92672">-eq</span> <span style="color:#ae81ff">1</span>)){
+</span></span><span style="display:flex;"><span>                    $FilteredGroupMembers += $Member
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            $AzureGroupMembers = (Get-MgGroupMember -GroupId $Group.AzureGroupId)
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">foreach</span> ($Member <span style="color:#66d9ef">in</span> $ADGroupMembers) {
+</span></span><span style="display:flex;"><span>                $ADGroupMembersAzureID += (Get-MGUser -UserId $Member.UserPrincipalName -ErrorAction SilentlyContinue )
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">foreach</span> ($Member <span style="color:#66d9ef">in</span> $AzureGroupMembers) {
+</span></span><span style="display:flex;"><span>                $AzureGroupMembersAzureID += (Get-MGUser -UserId $Member.Id -ErrorAction SilentlyContinue)
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            $ToAdd = Compare-Object -ReferenceObject $ADGroupMembersAzureID.Id -DifferenceObject $AzureGroupMembersAzureID.Id | Where-Object { $_.SideIndicator <span style="color:#f92672">-eq</span> <span style="color:#e6db74">&#39;&lt;=&#39;</span> } | Select-Object -ExpandProperty InputObject
+</span></span><span style="display:flex;"><span>            $ToRemove = Compare-Object -ReferenceObject $ADGroupMembersAzureID.Id -DifferenceObject $AzureGroupMembersAzureID.Id | Where-Object { $_.SideIndicator <span style="color:#f92672">-eq</span> <span style="color:#e6db74">&#39;=&gt;&#39;</span> } | Select-Object -ExpandProperty InputObject
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            $Data =@([<span style="color:#66d9ef">pscustomobject</span>]@{
+</span></span><span style="display:flex;"><span>                Group = $Group.AzureGroupId;
+</span></span><span style="display:flex;"><span>                Remove = @($ToRemove);
+</span></span><span style="display:flex;"><span>                Add = @($ToAdd)
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            )
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">end</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> $Data
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h1 id="make-the-changes">Make the changes</h1>
+<p>I will create a new PowerShell function to make the changes.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-PowerShell" data-lang="PowerShell"><span style="display:flex;"><span><span style="color:#66d9ef">function</span> Update-GSGTeamGroupMembership {
+</span></span><span style="display:flex;"><span>    [CmdletBinding()]
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">param</span> (
+</span></span><span style="display:flex;"><span>        $Groups
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">begin</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">#region Connect to Graph</span>
+</span></span><span style="display:flex;"><span>        import-module Microsoft.Graph.Groups
+</span></span><span style="display:flex;"><span>        import-module Microsoft.Graph.Users
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        $ClientSecret = <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        $ApplicationID = <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        $TenantID = <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        $graphtokenBody = @{   
+</span></span><span style="display:flex;"><span>            Grant_Type    = <span style="color:#e6db74">&#34;client_credentials&#34;</span>   
+</span></span><span style="display:flex;"><span>            Scope         = <span style="color:#e6db74">&#34;https://graph.microsoft.com/.default&#34;</span>   
+</span></span><span style="display:flex;"><span>            Client_Id     = $ApplicationID   
+</span></span><span style="display:flex;"><span>            Client_Secret = $ClientSecret   
+</span></span><span style="display:flex;"><span>        }  
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        $graphToken = Invoke-RestMethod -Uri <span style="color:#e6db74">&#34;https://login.microsoftonline.com/</span>$TenantID<span style="color:#e6db74">/oauth2/v2.0/token&#34;</span> -Method POST -Body $graphtokenBody | Select-Object -ExpandProperty Access_Token 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        Connect-MGGraph -AccessToken ($graphToken | ConvertTo-SecureString -AsPlainText -Force) -NoWelcome
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">#endregion</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">process</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">ForEach</span> ($Group <span style="color:#66d9ef">in</span> $Groups) {
+</span></span><span style="display:flex;"><span>            $GroupID = $Group.group
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span>(![<span style="color:#66d9ef">string</span>]::IsNullOrWhiteSpace($Group.Remove)){
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">ForEach</span>($User <span style="color:#66d9ef">in</span> $Group.Remove){
+</span></span><span style="display:flex;"><span>                    $User
+</span></span><span style="display:flex;"><span>                    Remove-MgGroupMemberByRef -GroupId $GroupID -DirectoryObjectId $User
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span>(![<span style="color:#66d9ef">string</span>]::IsNullOrWhiteSpace($Group.Add)){
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">ForEach</span>($User <span style="color:#66d9ef">in</span> $Group.Add){
+</span></span><span style="display:flex;"><span>                    New-MgGroupMember -GroupId $GroupID -DirectoryObjectId $User
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">end</span> {
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h1 id="final-thoughts">Final Thoughts</h1>
+<p>While writing this up I can see that there are some areas that I can improve on it.</p>
+<ul>
+<li>Error handling</li>
+<li>Move the graph token to its own function and have it handled in the script instead of calling it in each function.</li>
+<li>Incorporate a switch to toggle -whatif on the Update-GSGTeamGroupMembership</li>
+<li>Add addition information on the exported data to allow for easier data validation instead of just ids. I think the final results would look something like this</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-PowerShell" data-lang="PowerShell"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    Group = $Group.AzureGroupId;
+</span></span><span style="display:flex;"><span>    Remove = @(
+</span></span><span style="display:flex;"><span>        id = $ToRemove
+</span></span><span style="display:flex;"><span>        name = $name
+</span></span><span style="display:flex;"><span>        upn = $upn);
+</span></span><span style="display:flex;"><span>    Add = @(
+</span></span><span style="display:flex;"><span>        id = $ToAdd
+</span></span><span style="display:flex;"><span>        name = $name
+</span></span><span style="display:flex;"><span>        upn = $upn);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul class="pa0">
+  
+</ul>
+<div class="mt6 instapaper_ignoref">
+      
+      
+      </div>
+    </div>
+
+    <aside class="w-30-l mt6-l">
+
+
+
+
+</aside>
+
+  </article>
+
+    </main>
+    <footer class="bg-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="https://tbasten.github.io/" >
+    &copy; 
+  </a>
+    <div>
+<div class="ananke-socials">
+  
+</div>
+</div>
+  </div>
+</footer>
+
+  </body>
+</html>
